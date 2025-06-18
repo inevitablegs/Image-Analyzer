@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors duration-300">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Screenshot Text Explainer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            blue: {
+              600: '#2563eb',
+              400: '#60a5fa',
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen transition-colors">
+  <div class="container mx-auto px-4 py-10 max-w-3xl">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold text-blue-600 dark:text-blue-400">
+        <i class="fas fa-brain mr-2"></i> Screenshot Explainer
+      </h1>
+      <button id="themeToggle" class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+        <i id="themeIcon" class="fas fa-moon"></i>
+        <span>Toggle Theme</span>
+      </button>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow transition-colors">
+      {% csrf_token %}
+      <label class="block mb-2 font-medium">Upload Screenshot:</label>
+      <input type="file" name="screenshot" required class="block w-full mb-4 p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors">
+        Analyze
+      </button>
+    </form>
+
+    {% if image_url %}
+    <div class="mt-8 transition-colors">
+      <h2 class="text-xl font-semibold mb-2">Uploaded Image:</h2>
+      <img src="{{ image_url }}" alt="Uploaded" class="rounded border max-w-full dark:border-gray-600">
+    </div>
+    {% endif %}
+
+    {% if feedback %}
+    <div class="mt-8 transition-colors">
+      <h2 class="text-xl font-semibold mb-2">Extracted Explanation:</h2>
+      <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded text-sm whitespace-pre-wrap transition-colors">
+        {{ feedback|safe }}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const themeToggle = document.getElementById('themeToggle');
+      const themeIcon = document.getElementById('themeIcon');
+      const html = document.documentElement;
+
+      // Check for saved theme preference or OS preference
+      function initTheme() {
+        if (localStorage.getItem('theme') === 'dark' || 
+            (!localStorage.getItem('theme') && 
+             window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          html.classList.add('dark');
+          themeIcon.classList.replace('fa-moon', 'fa-sun');
+        } else {
+          html.classList.remove('dark');
+          themeIcon.classList.replace('fa-sun', 'fa-moon');
+        }
+      }
+
+      // Initialize theme
+      initTheme();
+
+      // Toggle theme on button click
+      themeToggle.addEventListener('click', function() {
+        if (html.classList.contains('dark')) {
+          html.classList.remove('dark');
+          themeIcon.classList.replace('fa-sun', 'fa-moon');
+          localStorage.setItem('theme', 'light');
+        } else {
+          html.classList.add('dark');
+          themeIcon.classList.replace('fa-moon', 'fa-sun');
+          localStorage.setItem('theme', 'dark');
+        }
+      });
+
+      // Watch for OS theme changes
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (!localStorage.getItem('theme')) {
+          initTheme();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
