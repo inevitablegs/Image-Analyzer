@@ -1,4 +1,4 @@
-```markdown
+
 # 📸 Image-Analyzer
 
 ## Description
@@ -59,4 +59,4 @@ Image-Analyzer/
 * **easyocr:**  A Python library for performing OCR (Optical Character Recognition).
 * **Google Gemini API:** A large language model API for generating text.
 
-```
+
